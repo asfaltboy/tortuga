@@ -8,12 +8,14 @@ import sys
 
 from PySide import QtCore, QtGui
 
+from base import BasePlugin
+
 logger = logging.getLogger('plugins.{}'.format(__name__))
 
 
-class Window(QtGui.QWidget):
+class SelectPath(BasePlugin):
     def __init__(self, parent=None):
-        QtGui.QWidget.__init__(self, parent)
+        BasePlugin.__init__(self, parent)
 
         # initialize input/output
         self.input = None
@@ -76,6 +78,6 @@ if __name__ == '__main__':
     logger.addHandler(ch)
     logger.setLevel(logging.DEBUG)
     app = QtGui.QApplication(sys.argv)
-    window = Window()
+    window = SelectPath()
     window.show()
     sys.exit(app.exec_())

@@ -1,4 +1,6 @@
 # Allow access to command-line arguments
+import importlib
+import logging
 import os
 import sys
 
@@ -8,8 +10,14 @@ from PySide.QtGui import *
 
 from uiloader import loadUi
 
+logger = logging.getLogger('plugins.{}'.format(__name__))
+ch = logging.StreamHandler()
+ch.setLevel(logging.DEBUG)
+logger.addHandler(ch)
+logger.setLevel(logging.DEBUG)
+
 SCRIPT_DIRECTORY = os.path.join(os.path.dirname(__file__), 'forms')
-PLUGINS_DIRECTORY = os.path.join(os.path.dirname(__file__), 'plugins')
+PLUGINS_PACKAGE = os.path.join('plugins')
 MAIN_FORM_UI = os.path.join(SCRIPT_DIRECTORY, 'mainwindow.ui')
 
 
@@ -23,12 +31,20 @@ class MainWindow(QMainWindow):
         self.show()
         self.app.exec_()
 
+    def get_plugins(self, package):
+        plugins = importlib.import_module(package)
+        logger.debug("Found plugin package: %s", plugins)
+        return plugins.available_plugins
+
+    def get_plugin_names(self, plugins):
+        names = [unicode(p) for p in plugins]
+        logger.debug("Found these plugins: %s", names)
+        return names
+
     def prepare_data(self):
-        model = QFileSystemModel()
-        model.setRootPath(PLUGINS_DIRECTORY)
-        tview = self.findChild(QTreeView)
-        tview.setModel(model)
-        tview.setRootIndex(model.index(PLUGINS_DIRECTORY))
+        self.plugins = self.get_plugins(PLUGINS_PACKAGE)
+        plugin_list = self.findChild(QListView, "plugins")
+        plugin_list.addItems(self.get_plugin_names(self.plugins))
 
     def prepare_interface(self):
         self.statusBar.showMessage('To start, open or create a flow')

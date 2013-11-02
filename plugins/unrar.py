@@ -6,16 +6,18 @@ and unrar.exe file (provided)
 """
 import logging
 import rarfile
+import sys
+
+from PySide import QtGui
+
+from base import BasePlugin
 
 logger = logging.getLogger('plugins.{}'.format(__name__))
 
 
-class Command(object):
-    rar_path = None
-    dest_path = None
-
-    def __init__(self, dest_path=None):
-        self.dest_path = dest_path
+class UnRar(BasePlugin):
+    def __init__(self, parent=None):
+        BasePlugin.__init__(self, parent)
 
     # TODO
     def check_if_overwriting(self):
@@ -31,3 +33,13 @@ class Command(object):
             return
         rf = rarfile.RarFile(self.rar_path)
         rf.extractall(path=self.dest_path)
+
+if __name__ == '__main__':
+    ch = logging.StreamHandler()
+    ch.setLevel(logging.DEBUG)
+    logger.addHandler(ch)
+    logger.setLevel(logging.DEBUG)
+    app = QtGui.QApplication(sys.argv)
+    window = UnRar()
+    window.show()
+    sys.exit(app.exec_())
