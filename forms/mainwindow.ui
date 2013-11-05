@@ -25,14 +25,14 @@
            <enum>QLayout::SetMaximumSize</enum>
           </property>
           <item>
-           <widget class="QToolButton" name="toolButton_4">
+           <widget class="QToolButton" name="pluginAdd">
             <property name="text">
              <string>Add</string>
             </property>
            </widget>
           </item>
           <item>
-           <widget class="QToolButton" name="toolButton">
+           <widget class="QToolButton" name="pluginRemove">
             <property name="text">
              <string>Remove</string>
             </property>
@@ -68,14 +68,14 @@
          </spacer>
         </item>
         <item>
-         <widget class="QToolButton" name="toolButton_3">
+         <widget class="QToolButton" name="flowPluginAdd">
           <property name="text">
            <string>-&gt;</string>
           </property>
          </widget>
         </item>
         <item>
-         <widget class="QToolButton" name="toolButton_2">
+         <widget class="QToolButton" name="flowPluginRemove">
           <property name="text">
            <string>&lt;-</string>
           </property>
@@ -97,9 +97,27 @@
        </layout>
       </item>
       <item>
-       <layout class="QVBoxLayout" name="verticalLayout_5" stretch="4,4">
+       <layout class="QVBoxLayout" name="verticalLayout_5" stretch="4,3">
         <item>
-         <widget class="QListWidget" name="script"/>
+         <widget class="QFrame" name="frame">
+          <property name="frameShape">
+           <enum>QFrame::Box</enum>
+          </property>
+          <property name="frameShadow">
+           <enum>QFrame::Sunken</enum>
+          </property>
+          <widget class="QWidget" name="verticalLayoutWidget">
+           <property name="geometry">
+            <rect>
+             <x>0</x>
+             <y>0</y>
+             <width>261</width>
+             <height>291</height>
+            </rect>
+           </property>
+           <layout class="QVBoxLayout" name="flow_container"/>
+          </widget>
+         </widget>
         </item>
         <item>
          <widget class="QTabWidget" name="tabWidget">

@@ -1,0 +1,2 @@
+rarfile==2.6
+pyside==1.2.0

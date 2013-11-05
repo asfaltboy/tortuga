@@ -22,6 +22,9 @@ MAIN_FORM_UI = os.path.join(SCRIPT_DIRECTORY, 'mainwindow.ui')
 
 
 class MainWindow(QMainWindow):
+    plugin_list = None
+    plugins = []
+
     def __init__(self, parent=None):
         self.app = QApplication(sys.argv)
         QMainWindow.__init__(self, parent=None)
@@ -31,25 +34,43 @@ class MainWindow(QMainWindow):
         self.show()
         self.app.exec_()
 
+    def load_plugins(self):
+        plugins = self.get_plugins(PLUGINS_PACKAGE)
+        if not plugins:
+            logger.debug("No plugins found")
+        self.plugins = self.get_plugin_dict(plugins)
+        logger.debug("Found these plugins: %s", self.plugins)
+
     def get_plugins(self, package):
         plugins = importlib.import_module(package)
         logger.debug("Found plugin package: %s", plugins)
         return plugins.available_plugins
 
-    def get_plugin_names(self, plugins):
-        names = [unicode(p) for p in plugins]
-        logger.debug("Found these plugins: %s", names)
-        return names
+    def get_plugin_dict(self, plugins):
+        return dict([(unicode(p), p) for p in plugins])
 
     def prepare_data(self):
-        self.plugins = self.get_plugins(PLUGINS_PACKAGE)
-        plugin_list = self.findChild(QListView, "plugins")
-        plugin_list.addItems(self.get_plugin_names(self.plugins))
+        self.load_plugins()
+        self.plugins_list = self.findChild(QListWidget, "plugins")
+        self.plugins_list.addItems(self.plugins.keys())
+
+    def get_current_flow(self):
+        return self.flow
+
+    def add_plugin(self):
+        selected = self.plugin_list.selectedItems()
+        flow = self.get_current_flow()
+        if len(selected):
+            for plugin in selected:
+                flow.add_step(plugin)
 
     def prepare_interface(self):
+        self.flow = self.findChild(QVBoxLayout, "flow_container")
         self.statusBar.showMessage('To start, open or create a flow')
         aquit = self.findChild(QAction, "actionQuit")
         aquit.triggered.connect(self.close)
+        aadd = self.findChild(QToolButton, "flowPluginAdd")
+        aadd.clicked.connect(self.add_plugin)
 
 
 app = MainWindow()
