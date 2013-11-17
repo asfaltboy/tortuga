@@ -23,7 +23,8 @@ MAIN_FORM_UI = os.path.join(SCRIPT_DIRECTORY, 'mainwindow.ui')
 
 class MainWindow(QMainWindow):
     plugin_list = None
-    plugins = []
+    plugins = {}
+    flow = None
 
     def __init__(self, parent=None):
         self.app = QApplication(sys.argv)
@@ -55,17 +56,18 @@ class MainWindow(QMainWindow):
         self.plugins_list.addItems(self.plugins.keys())
 
     def get_current_flow(self):
-        return self.flow
+        return self.flow or self.findChild(QListWidget, "flow_list")
 
     def add_plugin(self):
-        selected = self.plugin_list.selectedItems()
+        selected = self.plugins_list.selectedItems()
         flow = self.get_current_flow()
         if len(selected):
             for plugin in selected:
-                flow.add_step(plugin)
+                logger.debug("Adding plugin %s to list %s", plugin, flow)
+                flow.addItem(plugin.text())
 
     def prepare_interface(self):
-        self.flow = self.findChild(QVBoxLayout, "flow_container")
+        self.flow = self.get_current_flow()
         self.statusBar.showMessage('To start, open or create a flow')
         aquit = self.findChild(QAction, "actionQuit")
         aquit.triggered.connect(self.close)

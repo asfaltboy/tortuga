@@ -16,11 +16,11 @@
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout">
     <item row="0" column="0">
-     <layout class="QHBoxLayout" name="horizontalLayout" stretch="6,0,6">
+     <layout class="QHBoxLayout" name="main_layout" stretch="6,0,6">
       <item>
-       <layout class="QVBoxLayout" name="verticalLayout_2" stretch="1,12">
+       <layout class="QVBoxLayout" name="left_pane" stretch="1,12">
         <item>
-         <layout class="QHBoxLayout" name="horizontalLayout_2">
+         <layout class="QHBoxLayout" name="plugin_toolbox">
           <property name="sizeConstraint">
            <enum>QLayout::SetMaximumSize</enum>
           </property>
@@ -53,9 +53,9 @@
        </layout>
       </item>
       <item>
-       <layout class="QVBoxLayout" name="verticalLayout_6" stretch="1,0,0,4">
+       <layout class="QVBoxLayout" name="flow_buttons" stretch="1,0,0,4">
         <item>
-         <spacer name="verticalSpacer_2">
+         <spacer name="top_space">
           <property name="orientation">
            <enum>Qt::Vertical</enum>
           </property>
@@ -82,7 +82,7 @@
          </widget>
         </item>
         <item>
-         <spacer name="verticalSpacer">
+         <spacer name="bottom_space">
           <property name="orientation">
            <enum>Qt::Vertical</enum>
           </property>
@@ -97,7 +97,7 @@
        </layout>
       </item>
       <item>
-       <layout class="QVBoxLayout" name="verticalLayout_5" stretch="4,3">
+       <layout class="QVBoxLayout" name="right_pane" stretch="4,3">
         <item>
          <widget class="QFrame" name="frame">
           <property name="frameShape">
@@ -106,17 +106,11 @@
           <property name="frameShadow">
            <enum>QFrame::Sunken</enum>
           </property>
-          <widget class="QWidget" name="verticalLayoutWidget">
-           <property name="geometry">
-            <rect>
-             <x>0</x>
-             <y>0</y>
-             <width>261</width>
-             <height>291</height>
-            </rect>
-           </property>
-           <layout class="QVBoxLayout" name="flow_container"/>
-          </widget>
+          <layout class="QGridLayout" name="flow_container">
+           <item row="0" column="0">
+            <widget class="QListWidget" name="flow_list"/>
+           </item>
+          </layout>
          </widget>
         </item>
         <item>
