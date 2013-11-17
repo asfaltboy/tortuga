@@ -116,17 +116,27 @@
         <item>
          <widget class="QTabWidget" name="tabWidget">
           <property name="currentIndex">
-           <number>1</number>
+           <number>0</number>
           </property>
           <widget class="QWidget" name="tab_Settings">
            <attribute name="title">
             <string>Settings</string>
            </attribute>
+           <layout class="QGridLayout" name="gridLayout_2">
+            <item row="0" column="0">
+             <layout class="QGridLayout" name="settings_container" rowstretch="0"/>
+            </item>
+           </layout>
           </widget>
           <widget class="QWidget" name="tab_Output">
            <attribute name="title">
             <string>Output</string>
            </attribute>
+           <layout class="QGridLayout" name="gridLayout_3">
+            <item row="0" column="0">
+             <widget class="QTextEdit" name="flow_output"/>
+            </item>
+           </layout>
           </widget>
          </widget>
         </item>

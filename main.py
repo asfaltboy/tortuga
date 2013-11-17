@@ -25,6 +25,8 @@ class MainWindow(QMainWindow):
     plugin_list = None
     plugins = {}
     flow = None
+    flow_steps = []
+    tabs = None
 
     def __init__(self, parent=None):
         self.app = QApplication(sys.argv)
@@ -58,16 +60,32 @@ class MainWindow(QMainWindow):
     def get_current_flow(self):
         return self.flow or self.findChild(QListWidget, "flow_list")
 
+    def flow_step_selected(self, index):
+        print("Selected item: %s" % index)
+        if index != -1:
+            current_step = self.flow_steps[index]
+            print current_step
+            settings = self.tabs_widget.findChild(
+                QGridLayout, "settings_container")
+            settings.addWidget(current_step)
+            self.tabs_widget.setCurrentIndex(0)
+
     def add_plugin(self):
         selected = self.plugins_list.selectedItems()
         flow = self.get_current_flow()
         if len(selected):
             for plugin in selected:
                 logger.debug("Adding plugin %s to list %s", plugin, flow)
+                plugin_widget = self.plugins.get(plugin.text())
+                if not plugin_widget:
+                    raise Exception("Invalid widget key in plugins")
+                self.flow_steps.append(plugin_widget)
                 flow.addItem(plugin.text())
 
     def prepare_interface(self):
+        self.tabs_widget = self.findChild(QTabWidget, 'tabWidget')
         self.flow = self.get_current_flow()
+        self.flow.currentRowChanged.connect(self.flow_step_selected)
         self.statusBar.showMessage('To start, open or create a flow')
         aquit = self.findChild(QAction, "actionQuit")
         aquit.triggered.connect(self.close)
