@@ -124,7 +124,7 @@
            </attribute>
            <layout class="QGridLayout" name="gridLayout_2">
             <item row="0" column="0">
-             <layout class="QGridLayout" name="settings_container" rowstretch="0"/>
+             <layout class="QVBoxLayout" name="settings_container"/>
             </item>
            </layout>
           </widget>
@@ -152,7 +152,7 @@
      <x>0</x>
      <y>0</y>
      <width>600</width>
-     <height>22</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">

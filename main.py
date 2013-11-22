@@ -17,12 +17,12 @@ logger.addHandler(ch)
 logger.setLevel(logging.DEBUG)
 
 SCRIPT_DIRECTORY = os.path.join(os.path.dirname(__file__), 'forms')
-PLUGINS_PACKAGE = os.path.join('plugins')
 MAIN_FORM_UI = os.path.join(SCRIPT_DIRECTORY, 'mainwindow.ui')
+PLUGINS_PACKAGE = 'plugins'
 
 
 class MainWindow(QMainWindow):
-    plugin_list = None
+    plugins_list = None
     plugins = {}
     flow = None
     flow_steps = []
@@ -56,6 +56,7 @@ class MainWindow(QMainWindow):
         self.load_plugins()
         self.plugins_list = self.findChild(QListWidget, "plugins")
         self.plugins_list.addItems(self.plugins.keys())
+        self.plugins_list.itemDoubleClicked.connect(self.add_plugin)
 
     def get_current_flow(self):
         return self.flow or self.findChild(QListWidget, "flow_list")
@@ -63,11 +64,10 @@ class MainWindow(QMainWindow):
     def flow_step_selected(self, index):
         print("Selected item: %s" % index)
         if index != -1:
-            current_step = self.flow_steps[index]
-            print current_step
+            current_step = self.flow_steps[index]()
             settings = self.tabs_widget.findChild(
-                QGridLayout, "settings_container")
-            settings.addWidget(current_step)
+                QVBoxLayout, "settings_container")
+            settings.addWidget(current_step, parent=settings)
             self.tabs_widget.setCurrentIndex(0)
 
     def add_plugin(self):
@@ -85,12 +85,15 @@ class MainWindow(QMainWindow):
     def prepare_interface(self):
         self.tabs_widget = self.findChild(QTabWidget, 'tabWidget')
         self.flow = self.get_current_flow()
-        self.flow.currentRowChanged.connect(self.flow_step_selected)
-        self.statusBar.showMessage('To start, open or create a flow')
         aquit = self.findChild(QAction, "actionQuit")
-        aquit.triggered.connect(self.close)
         aadd = self.findChild(QToolButton, "flowPluginAdd")
+
+        # connect handlers
+        self.flow.currentRowChanged.connect(self.flow_step_selected)
+        aquit.triggered.connect(self.close)
         aadd.clicked.connect(self.add_plugin)
+
+        self.statusBar.showMessage('To start, open or create a flow')
 
 
 app = MainWindow()
