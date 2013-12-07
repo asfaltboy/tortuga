@@ -64,6 +64,7 @@ class BasePlugin(QtGui.QWidget):
                 ret[atr] = [s.itemText(i) for i in range(s.count())
                             if s.itemText(i) != '']
                 ret['%s_index' % atr] = s.currentIndex()
+        return ret
 
     def set_settings(self, settings=None):
         """

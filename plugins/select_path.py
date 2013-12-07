@@ -10,7 +10,7 @@ from PySide import QtCore, QtGui
 
 from base import BasePlugin
 
-logger = logging.getLogger('plugins.{}'.format(__name__))
+logger = logging.getLogger(__name__)
 
 
 class SelectPath(BasePlugin):
@@ -19,8 +19,6 @@ class SelectPath(BasePlugin):
     def __init__(self, parent=None, settings=None):
         BasePlugin.__init__(self, parent)
 
-        # initialize input/output
-        self.input = None
         self.output = None
 
         self.fileLabel = QtGui.QLabel(self.tr("Select Path:"))
@@ -47,7 +45,7 @@ class SelectPath(BasePlugin):
             QtCore.QDir.currentPath()
         )
         self.fileComboBox.addItem(directory)
-        self.fileComboBox.setCurrentIndex(self.fileComboBox.currentIndex() + 1)
+        # self.fileComboBox.setCurrentIndex(self.fileComboBox.currentIndex() + 1)
         self.validatePath(directory)
 
     def validatePath(self, text):
@@ -56,9 +54,11 @@ class SelectPath(BasePlugin):
             logger.warn('The selected path is invalid, please try again')
             self.fileComboBox.removeItem(self.fileComboBox.currentIndex())
             return
-        self.output = os.path.exists(text)
+        if os.path.exists(text):
+            self.output = text
 
     def run(self, input=None):
+        self.validatePath(self.fileComboBox.currentText())
         return self.output
 
 

@@ -10,11 +10,14 @@ from PySide.QtGui import *
 
 from uiloader import loadUi
 
-logger = logging.getLogger('plugins.{}'.format(__name__))
+logger = logging.getLogger(__name__)
 ch = logging.StreamHandler()
 ch.setLevel(logging.DEBUG)
 logger.addHandler(ch)
 logger.setLevel(logging.DEBUG)
+plogger = logging.getLogger('plugins')
+plogger.addHandler(ch)
+plogger.setLevel(logging.DEBUG)
 
 SCRIPT_DIRECTORY = os.path.join(os.path.dirname(__file__), 'forms')
 MAIN_FORM_UI = os.path.join(SCRIPT_DIRECTORY, 'mainwindow.ui')
@@ -38,6 +41,9 @@ class FlowStep(object):
             self.widget_instance = self.widget_class(settings=self.settings)
         return self.widget_instance
 
+    def run(self, input):
+        return self.widget.run(input)
+
     def deselect_widget(self, settings):
         """
         Store the widget settings in this flow and remove it from the passed
@@ -55,7 +61,6 @@ class FlowStep(object):
 class MainWindow(QMainWindow):
     plugins_list = None
     plugins = {}
-    flow = None
     flow_steps = []
     tabs = None
 
@@ -89,8 +94,11 @@ class MainWindow(QMainWindow):
         self.plugins_list.addItems(self.plugins.keys())
         self.plugins_list.itemDoubleClicked.connect(self.add_plugin)
 
-    def get_current_flow(self):
-        return self.flow or self.findChild(QListWidget, "flow_list")
+    @property
+    def flow(self):
+        if not getattr(self, '_flow', None):
+            self._flow = self.findChild(QListWidget, "flow_list")
+        return self._flow
 
     def flow_step_selected(self, new_item, prev_item):
         settings = self.tabs_widget.findChild(
@@ -111,26 +119,42 @@ class MainWindow(QMainWindow):
 
     def add_plugin(self):
         selected = self.plugins_list.selectedItems()
-        flow = self.get_current_flow()
         if len(selected):
             for plugin in selected:
-                logger.debug("Adding plugin %s to list %s", plugin, flow)
+                logger.debug("Adding plugin %s to list %s", plugin, self.flow)
                 plugin_widget = self.plugins.get(plugin.text())
                 if not plugin_widget:
                     raise Exception("Invalid widget key in plugins")
                 self.flow_steps.append(FlowStep(plugin_widget))
-                flow.addItem(plugin.text())
+                self.flow.addItem(plugin.text())
+
+    def run_flow(self):
+        logger.debug("Running flow")
+        input = None
+        all_output = ""
+        for i, step in enumerate(self.flow_steps):
+            output = step.run(input)
+            logger.debug("ran flow step %i, input: %s, output: %s", i, input, output)
+            if output:
+                # use output as next step's input
+                input = output
+
+                # combine all output in a single
+                all_output += output + "\n"
+        self.flow_output.setPlainText(output)
 
     def prepare_interface(self):
         self.tabs_widget = self.findChild(QTabWidget, 'tabWidget')
-        self.flow = self.get_current_flow()
         aquit = self.findChild(QAction, "actionQuit")
         aadd = self.findChild(QToolButton, "flowPluginAdd")
+        arun = self.findChild(QAction, "runFlow")
+        self.flow_output = self.findChild(QTextEdit, "flow_output")
 
         # connect handlers
         self.flow.currentItemChanged.connect(self.flow_step_selected)
         aquit.triggered.connect(self.close)
         aadd.clicked.connect(self.add_plugin)
+        arun.triggered.connect(self.run_flow)
 
         self.statusBar.showMessage('To start, open or create a flow')
 

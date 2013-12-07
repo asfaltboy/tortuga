@@ -12,10 +12,12 @@ from PySide import QtGui
 
 from base import BasePlugin
 
-logger = logging.getLogger('plugins.{}'.format(__name__))
+logger = logging.getLogger(__name__)
 
 
 class UnRar(BasePlugin):
+    dest_path = None
+
     def __init__(self, parent=None, settings=None):
         BasePlugin.__init__(self, parent)
 
@@ -27,11 +29,11 @@ class UnRar(BasePlugin):
         """
         return False
 
-    def run(self):
-        if not self.input:
+    def run(self, input):
+        if not input:
             logger.warn("A rar source path is required as input")
             return
-        rf = rarfile.RarFile(self.rar_path)
+        rf = rarfile.RarFile(input)
         rf.extractall(path=self.dest_path)
 
 if __name__ == '__main__':

@@ -7,7 +7,7 @@ from PySide import QtCore, QtGui
 
 from base import BasePlugin, WrongInput
 
-logger = logging.getLogger('plugins.{}'.format(__name__))
+logger = logging.getLogger(__name__)
 
 
 class FindFiles(BasePlugin):
@@ -38,16 +38,16 @@ class FindFiles(BasePlugin):
 
         self.set_settings(settings)
 
-    def validate(self):
-        if not self.input:
+    def validate(self, input):
+        if not input:
             raise WrongInput('No input provided')
 
-        if not os.path.exists(self.input):
+        if not os.path.exists(input):
             raise WrongInput('Input path does not exist')
 
     def run(self, input):
-        self.validate()
-        directory = QtCore.QDir(self.input)
+        self.validate(input)
+        directory = QtCore.QDir(input)
         self.output = self.find(directory)
         logger.debug("Found files: %s", pformat(self.output))
         return self.output
@@ -60,7 +60,9 @@ class FindFiles(BasePlugin):
         if len(fileName) == 0:
             fileName = "*"
         files = directory.entryList([fileName],
-                                    QtCore.QDir.Files | QtCore.QDir.NoSymLinks)
+                                    QtCore.QDir.Files |
+                                    QtCore.QDir.Dirs |
+                                    QtCore.QDir.NoSymLinks)
 
         if len(text):
             files = self.findFiles(directory, files, text)

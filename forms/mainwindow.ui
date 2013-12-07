@@ -18,28 +18,7 @@
     <item row="0" column="0">
      <layout class="QHBoxLayout" name="main_layout" stretch="6,0,6">
       <item>
-       <layout class="QVBoxLayout" name="left_pane" stretch="1,12">
-        <item>
-         <layout class="QHBoxLayout" name="plugin_toolbox">
-          <property name="sizeConstraint">
-           <enum>QLayout::SetMaximumSize</enum>
-          </property>
-          <item>
-           <widget class="QToolButton" name="pluginAdd">
-            <property name="text">
-             <string>Add</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QToolButton" name="pluginRemove">
-            <property name="text">
-             <string>Remove</string>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </item>
+       <layout class="QVBoxLayout" name="left_pane" stretch="12">
         <item>
          <widget class="QListWidget" name="plugins">
           <property name="minimumSize">
@@ -116,7 +95,7 @@
         <item>
          <widget class="QTabWidget" name="tabWidget">
           <property name="currentIndex">
-           <number>0</number>
+           <number>1</number>
           </property>
           <widget class="QWidget" name="tab_Settings">
            <attribute name="title">
@@ -134,7 +113,11 @@
            </attribute>
            <layout class="QGridLayout" name="gridLayout_3">
             <item row="0" column="0">
-             <widget class="QTextEdit" name="flow_output"/>
+             <widget class="QTextEdit" name="flow_output">
+              <property name="readOnly">
+               <bool>true</bool>
+              </property>
+             </widget>
             </item>
            </layout>
           </widget>
@@ -175,6 +158,20 @@
    <addaction name="menuHelp"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
+  <widget class="QToolBar" name="toolBar">
+   <property name="windowTitle">
+    <string>toolBar</string>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+   <addaction name="pluginAdd"/>
+   <addaction name="pluginRemove"/>
+   <addaction name="runFlow"/>
+  </widget>
   <action name="actionNew_flow">
    <property name="text">
     <string>New flow</string>
@@ -204,6 +201,30 @@
    </property>
    <property name="menuRole">
     <enum>QAction::AboutRole</enum>
+   </property>
+  </action>
+  <action name="pluginAdd">
+   <property name="text">
+    <string>New</string>
+   </property>
+   <property name="toolTip">
+    <string>Add a new plugin</string>
+   </property>
+  </action>
+  <action name="pluginRemove">
+   <property name="text">
+    <string>Remove</string>
+   </property>
+   <property name="toolTip">
+    <string>Remove an existing plugin</string>
+   </property>
+  </action>
+  <action name="runFlow">
+   <property name="text">
+    <string>&amp;Run</string>
+   </property>
+   <property name="toolTip">
+    <string>Run the current flow script</string>
    </property>
   </action>
  </widget>
