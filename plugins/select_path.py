@@ -14,7 +14,9 @@ logger = logging.getLogger('plugins.{}'.format(__name__))
 
 
 class SelectPath(BasePlugin):
-    def __init__(self, parent=None):
+    setting_attributes = ['fileComboBox']
+
+    def __init__(self, parent=None, settings=None):
         BasePlugin.__init__(self, parent)
 
         # initialize input/output
@@ -22,10 +24,10 @@ class SelectPath(BasePlugin):
         self.output = None
 
         self.fileLabel = QtGui.QLabel(self.tr("Select Path:"))
-        self.fileComboBox = self.createComboBox(self.getLastPaths())
+        self.fileComboBox = self.createComboBox()
         # self.fileComboBox.setSizeAdjustPolicy(QtGui.QComboBox.AdjustToMinimumContentsLength)
         self.fileComboBox.setFixedHeight(self.fileComboBox.minimumSizeHint().height())
-        self.fileComboBox.activated[str].connect(self.pathSelected)
+        self.fileComboBox.activated[str].connect(self.validatePath)
         self.browseButton = self.createButton(self.tr("&Browse..."),
                                               self.browse)
 
@@ -37,6 +39,8 @@ class SelectPath(BasePlugin):
 
         self.setWindowTitle(self.tr("Select path"))
 
+        self.set_settings(settings)
+
     def browse(self):
         directory = QtGui.QFileDialog.getExistingDirectory(
             self, self.tr("Select File"),
@@ -44,9 +48,9 @@ class SelectPath(BasePlugin):
         )
         self.fileComboBox.addItem(directory)
         self.fileComboBox.setCurrentIndex(self.fileComboBox.currentIndex() + 1)
-        self.pathSelected(directory)
+        self.validatePath(directory)
 
-    def pathSelected(self, text):
+    def validatePath(self, text):
         logger.debug('Path selected: %s', text)
         if not os.path.exists(text):
             logger.warn('The selected path is invalid, please try again')
@@ -54,22 +58,8 @@ class SelectPath(BasePlugin):
             return
         self.output = os.path.exists(text)
 
-    def getLastPaths(self):
-        # TODO: get latest stored paths from db
-        return
-
-    def createButton(self, text, member):
-        button = QtGui.QPushButton(text)
-        button.clicked.connect(member)
-        return button
-
-    def createComboBox(self, text=""):
-        comboBox = QtGui.QComboBox()
-        comboBox.setEditable(True)
-        comboBox.addItem(text)
-        comboBox.setSizePolicy(QtGui.QSizePolicy.Expanding,
-                               QtGui.QSizePolicy.Preferred)
-        return comboBox
+    def run(self, input=None):
+        return self.output
 
 
 if __name__ == '__main__':

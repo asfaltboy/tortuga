@@ -5,46 +5,52 @@ import sys
 
 from PySide import QtCore, QtGui
 
-from exceptions import WrongInput
-from base import BasePlugin
+from base import BasePlugin, WrongInput
 
 logger = logging.getLogger('plugins.{}'.format(__name__))
 
 
 class FindFiles(BasePlugin):
-    def __init__(self, parent=None):
+    setting_attributes = ['fileComboBox', 'textComboBox']
+
+    def __init__(self, parent=None, settings=None):
         BasePlugin.__init__(self, parent)
 
-        self.fileComboBox = self.createComboBox(self.tr("*"))
+        self.fileComboBox = self.createComboBox()
         self.textComboBox = self.createComboBox()
-        self.sourcePath = QtGui.QLabel("")
+        self.sourcePath = QtGui.QLabel('')
 
-        self.fileLabel = QtGui.QLabel(self.tr("Named:"))
-        self.textLabel = QtGui.QLabel(self.tr("Containing text:"))
-        self.directoryLabel = QtGui.QLabel(self.tr("In path:"))
+        self.fileLabel = QtGui.QLabel(self.tr('Named:'))
+        self.textLabel = QtGui.QLabel(self.tr('Containing text:'))
 
         mainLayout = QtGui.QFormLayout()
         mainLayout.addWidget(self.fileLabel)
         mainLayout.addWidget(self.fileComboBox)
         mainLayout.addWidget(self.textLabel)
         mainLayout.addWidget(self.textComboBox)
-        mainLayout.addWidget(self.directoryLabel)
         self.setLayout(mainLayout)
 
         self.setWindowTitle(self.tr("Find Files"))
 
+        if settings is None:
+            # by default show a * in file combobox
+            settings = {'fileComboBox': [self.tr("*")]}
+
+        self.set_settings(settings)
+
     def validate(self):
         if not self.input:
-            raise WrongInput("No input provided")
+            raise WrongInput('No input provided')
 
         if not os.path.exists(self.input):
-            raise WrongInput("Input path does not exist")
+            raise WrongInput('Input path does not exist')
 
-    def run(self):
+    def run(self, input):
         self.validate()
         directory = QtCore.QDir(self.input)
         self.output = self.find(directory)
         logger.debug("Found files: %s", pformat(self.output))
+        return self.output
 
     def find(self, directory):
         fileName = self.fileComboBox.currentText()

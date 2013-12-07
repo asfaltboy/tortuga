@@ -16,7 +16,7 @@ logger = logging.getLogger('plugins.{}'.format(__name__))
 
 
 class UnRar(BasePlugin):
-    def __init__(self, parent=None):
+    def __init__(self, parent=None, settings=None):
         BasePlugin.__init__(self, parent)
 
     # TODO
