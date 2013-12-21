@@ -140,8 +140,11 @@ class MainWindow(QMainWindow):
                 input = output
 
                 # combine all output in a single
-                all_output += output + "\n"
-        self.flow_output.setPlainText(output)
+                if isinstance(output, (list, tuple)):
+                    all_output += ", ".join(output) + "\n"
+                else:
+                    all_output += output + "\n"
+        self.flow_output.setPlainText(all_output)
 
     def prepare_interface(self):
         self.tabs_widget = self.findChild(QTabWidget, 'tabWidget')

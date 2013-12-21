@@ -47,8 +47,7 @@ class FindFiles(BasePlugin):
 
     def run(self, input):
         self.validate(input)
-        directory = QtCore.QDir(input)
-        self.output = self.find(directory)
+        self.output = self.find(input)
         logger.debug("Found files: %s", pformat(self.output))
         return self.output
 
@@ -59,10 +58,13 @@ class FindFiles(BasePlugin):
         files = []
         if len(fileName) == 0:
             fileName = "*"
-        files = directory.entryList([fileName],
-                                    QtCore.QDir.Files |
-                                    QtCore.QDir.Dirs |
-                                    QtCore.QDir.NoSymLinks)
+        # files = directory.entryList([fileName],
+        it = QtCore.QDirIterator(
+            directory, [fileName], filters=QtCore.QDir.Files | QtCore.QDir.Dirs,
+            flags=QtCore.QDirIterator.Subdirectories | QtCore.QDirIterator.FollowSymlinks)
+
+        while it.hasNext():
+            files.append(it.next())
 
         if len(text):
             files = self.findFiles(directory, files, text)
